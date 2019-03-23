@@ -1,0 +1,106 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1671
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 Sub Stock_Data():\
+\
+Dim ws As Worksheet\
+\
+For Each ws In Worksheets\
+\
+    Dim Volume As Double\
+    Dim Location As Integer\
+    Dim Starter As Long\
+    Dim Change As Double\
+    Dim x As Integer\
+    Dim Percent As Double\
+    Dim Greatest_Increase As Double\
+    Dim Greatest_Decrease As Double\
+    Dim Greatest_Volume As Double\
+    \
+    \
+    Volume = 0\
+    Location = 2\
+    Starter = 2\
+    Greatest_Increase = 0\
+    Greatest_Decrease = 0\
+    Greatest_Volume = 0\
+    \
+     \
+    ws.Cells(1, 9).Value = "Ticker"\
+    ws.Cells(1, 12).Value = "Total Stock Volume"\
+    ws.Cells(1, 10).Value = "Yearly Change"\
+    ws.Cells(1, 11).Value = "Percent Change"\
+    \
+    ws.Cells(1, 16).Value = "Ticker"\
+    ws.Cells(1, 17).Value = "Values"\
+    \
+    ws.Cells(2, 15).Value = "Greatest % Increase"\
+    ws.Cells(3, 15).Value = "Greatest % Decrease"\
+    ws.Cells(4, 15).Value = "Greatest Total Volume"\
+    \
+    NumRows = Range("A1", Range("A1").End(xlDown)).Rows.Count\
+        \
+        For i = 2 To NumRows\
+            If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then\
+                Volume = Volume + ws.Cells(i, 7).Value\
+                ws.Cells(Location, 12).Value = Volume\
+                ws.Cells(Location, 9).Value = ws.Cells(i, 1).Value\
+                    \
+                    If Volume > Greatest_Volume Then\
+                        Greatest_Volume = Volume\
+                        ws.Cells(4, 16).Value = ws.Cells(i, 1).Value\
+                    End If\
+                    \
+                Volume = 0\
+                Change = ws.Cells(i, 6).Value - ws.Cells(Starter, 3).Value\
+                ws.Cells(Location, 10).Value = Change\
+                    \
+                    If ws.Cells(Starter, 3).Value <> 0 Then\
+                        Percent = Change / ws.Cells(Starter, 3).Value\
+                        ws.Cells(Location, 11) = Format(Percent, "0.00%")\
+                         If Percent > Greatest_Increase Then\
+                            Greatest_Increase = Percent\
+                            ws.Cells(2, 16).Value = ws.Cells(i, 1).Value\
+                        ElseIf Percent < Greatest_Decrease Then\
+                            Greatest_Decrease = Percent\
+                            ws.Cells(3, 16).Value = ws.Cells(i, 1).Value\
+                        End If\
+                    Else\
+                        ws.Cells(Location, 11).Value = "N/A"\
+                    End If\
+                    \
+                Location = Location + 1\
+                Starter = i + 1\
+            Else\
+                Volume = Volume + ws.Cells(i, 7).Value\
+            End If\
+        Next i\
+        \
+        For x = 2 To Location\
+             If ws.Cells(x, 10).Value > 0 Then\
+                ws.Cells(x, 10).Interior.ColorIndex = 4\
+             ElseIf ws.Cells(x, 10).Value < 0 Then\
+                ws.Cells(x, 10).Interior.ColorIndex = 3\
+            Else\
+                ws.Cells(x, 10).Interior.ColorIndex = 2\
+            End If\
+        Next x\
+        \
+    ws.Cells(2, 17).Value = Format(Greatest_Increase, "0.00%")\
+    ws.Cells(3, 17).Value = Format(Greatest_Decrease, "0.00%")\
+    ws.Cells(4, 17).Value = Greatest_Volume\
+    \
+    Dim p As Integer\
+        For p = 1 To ws.UsedRange.Columns.Count\
+             ws.Columns(p).EntireColumn.AutoFit\
+        Next p\
+    \
+    \
+Next ws\
+\
+End Sub\
+}
